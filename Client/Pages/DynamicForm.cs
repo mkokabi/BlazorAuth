@@ -35,12 +35,19 @@ namespace Hosted.Client.Pages
 
         private async Task Submit()
         {
-            // await Http.PostJsonAsync<string>("Form", ElementValues); // wouldn't allow getting response
-            var strElementValues = JsonConvert.SerializeObject(ElementValues);
-            var response = await Http.PostAsync("Form", new StringContent(strElementValues, encoding: Encoding.UTF8, mediaType: "application/json"));
-            serverResponse = response.IsSuccessStatusCode ?
-                await response.Content.ReadAsStringAsync() :
-                response.StatusCode.ToString();
+            try
+            {
+                // await Http.PostJsonAsync<string>("Form", ElementValues); // wouldn't allow getting response
+                var strElementValues = JsonConvert.SerializeObject(ElementValues);
+                var response = await Http.PostAsync("Form", new StringContent(strElementValues, encoding: Encoding.UTF8, mediaType: "application/json"));
+                serverResponse = response.IsSuccessStatusCode ?
+                    await response.Content.ReadAsStringAsync() :
+                    response.StatusCode.ToString();
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
         }
     }
 }
